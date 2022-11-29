@@ -1,4 +1,4 @@
-from src.oidc_jwt_validation.http_singleton import SingletonAiohttp
+from .http_singleton import SingletonAiohttp
 import os
 
 

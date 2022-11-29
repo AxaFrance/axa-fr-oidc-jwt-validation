@@ -1,4 +1,4 @@
-from src.oidc_jwt_validation.http_service import ServiceGet
+from .http_service import ServiceGet
 from jose import jwt
 from fastapi import HTTPException, status
 from datetime import datetime
