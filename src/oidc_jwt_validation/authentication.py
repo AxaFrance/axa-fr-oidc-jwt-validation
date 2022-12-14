@@ -22,10 +22,9 @@ async def get_jwks_async(service: ServiceGet, issuer: str):
 
 def is_scope_valid(payload: dict, scope: str):
     if payload is not None and "scope" in payload:
-        scope_from_payload = payload["scope"]
-        return scope_from_payload is not None and scope.__eq__(scope_from_payload)
-    else:
-        return False
+        scope_from_payload = str(payload["scope"])
+        return scope_from_payload is not None and scope in scope_from_payload.split(" ")
+    return False
 
 
 class Authentication:
