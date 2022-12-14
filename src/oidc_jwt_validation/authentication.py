@@ -76,6 +76,8 @@ class Authentication:
                 detail="incorrect claims, please check the audience and issuer",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        except HTTPException as e:
+            raise e
         except Exception as e:
             exception_message = str(e)
             logger.exception('Authentication exception : %s', exception_message)
