@@ -46,6 +46,9 @@ jobs:
         echo 'VERSION = "${{ needs.tags.outputs.new_version }}"' >| version.py
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools wheel
+        python -m pip install -r requirements.txt
+    - name: Running unit tests
+      run: python -m unittest discover -s src.tests -t .
     - name: Build package
       run: python setup.py sdist bdist_wheel
     - name: Publish package

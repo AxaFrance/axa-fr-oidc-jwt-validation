@@ -20,6 +20,14 @@ async def get_jwks_async(service: ServiceGet, issuer: str):
     return cache_jwks
 
 
+def is_scope_valid(payload: dict, scope: str):
+    if payload is not None and "scope" in payload:
+        scope_from_payload = payload["scope"]
+        return scope_from_payload is not None and scope.__eq__(scope_from_payload)
+    else:
+        return False
+
+
 class Authentication:
     def __init__(self, logging, issuer: str, service: ServiceGet):
         self.logger = logging.get_logger(__name__)
@@ -44,6 +52,12 @@ class Authentication:
                     rsa_key = {"kty": key["kty"], "kid": key["kid"], "use": key["use"], "n": key["n"], "e": key["e"]}
             if rsa_key:
                 payload = jwt.decode(token, rsa_key, algorithms=ALGORITHMS, audience=audience, issuer=self.issuer)
+                if not is_scope_valid(payload, scope):
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Insufficient scope",
+                        headers={"WWW-Authenticate": "Bearer"},
+                    )
                 return payload
             else:
                 raise HTTPException(
