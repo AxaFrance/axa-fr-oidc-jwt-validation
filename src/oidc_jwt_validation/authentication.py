@@ -1,7 +1,8 @@
-from .http_service import ServiceGet
 from jose import jwt
 from fastapi import HTTPException, status
 from datetime import datetime
+from logging import Logger
+from .http_service import ServiceGet
 
 ALGORITHMS = ["RS256"]
 cache_timestamp = 0
@@ -28,8 +29,8 @@ def is_scope_valid(payload: dict, scope: str):
 
 
 class Authentication:
-    def __init__(self, logging, issuer: str, service: ServiceGet):
-        self.logger = logging.get_logger(__name__)
+    def __init__(self, logger: Logger, issuer: str, service: ServiceGet):
+        self.logger = logger
         self.service = service
         self.issuer = issuer
 

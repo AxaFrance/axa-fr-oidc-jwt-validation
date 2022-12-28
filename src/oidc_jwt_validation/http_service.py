@@ -1,3 +1,4 @@
+from logging import Logger
 from .http_singleton import SingletonAiohttp
 import os
 
@@ -7,8 +8,8 @@ HEADERS = {'Content-type': APPLICATION_JSON, 'Accept': APPLICATION_JSON}
 
 
 class ServiceGet:
-    def __init__(self, logging):
-        self.logger = logging.get_logger(__name__)
+    def __init__(self, logger: Logger):
+        self.logger = logger
         self.proxy = os.getenv("https_proxy", None)
         self.http_timeout = int(os.getenv("http_timeout", "30"))
 
