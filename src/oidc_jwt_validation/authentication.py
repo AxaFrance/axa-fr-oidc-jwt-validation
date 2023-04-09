@@ -46,7 +46,7 @@ class Authentication:
                     detail="description :wrong algorithm used",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
-            jwks = await get_jwks_async(self.service, self.issuer)
+            jwks = await get_jwks_async(self.service, self.issuer, self.jwks_uri)
             rsa_key = {}
             for key in jwks["keys"]:
                 if key["kid"] == unverified_header["kid"]:
