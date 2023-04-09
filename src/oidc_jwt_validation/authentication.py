@@ -9,12 +9,12 @@ cache_timestamp = 0
 cache_jwks = None
 
 
-async def get_jwks_async(service: ServiceGet, issuer: str):
+async def get_jwks_async(service: ServiceGet, issuer: str, jwks_uri: str = "/jwks"):
     global cache_timestamp
     global cache_jwks
     timestamp = datetime.timestamp(datetime.now())
     if cache_timestamp + 86400 < timestamp:
-        json_url = issuer + "/jwks"
+        json_url = issuer + jwks_uri
         cache_jwks = await service.get_async(json_url)
         cache_timestamp = timestamp
 
@@ -29,10 +29,11 @@ def is_scope_valid(payload: dict, scope: str):
 
 
 class Authentication:
-    def __init__(self, logger: Logger, issuer: str, service: ServiceGet):
+    def __init__(self, logger: Logger, issuer: str, service: ServiceGet, jwks_uri: str):
         self.logger = logger
         self.service = service
         self.issuer = issuer
+        self.jwks_uri = jwks_uri
 
     async def validate_async(self, token, audience: str, scope: str):
         logger = self.logger
