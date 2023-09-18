@@ -1,8 +1,9 @@
 from jose import jwt
-from fastapi import HTTPException, status
+from starlette.exceptions import HTTPException
 from datetime import datetime
 from logging import Logger
 from .http_service import ServiceGet
+from http import HTTPStatus
 
 ALGORITHMS = ["RS256"]
 cache_timestamp = 0
@@ -42,7 +43,7 @@ class Authentication:
             unverified_header = jwt.get_unverified_header(token)
             if not unverified_header["alg"].upper() in ALGORITHMS:
                 raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    status_code=HTTPStatus.UNAUTHORIZED.value,
                     detail="description :wrong algorithm used",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
@@ -55,26 +56,26 @@ class Authentication:
                 payload = jwt.decode(token, rsa_key, algorithms=ALGORITHMS, audience=audience, issuer=self.issuer)
                 if not is_scope_valid(payload, scope):
                     raise HTTPException(
-                        status_code=status.HTTP_403_FORBIDDEN,
+                        status_code=HTTPStatus.FORBIDDEN.value,
                         detail="Insufficient scope",
                         headers={"WWW-Authenticate": "Bearer"},
                     )
                 return payload
             else:
                 raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    status_code=HTTPStatus.UNAUTHORIZED.value,
                     detail="RSA key not found",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
         except jwt.ExpiredSignatureError:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+                status_code=HTTPStatus.UNAUTHORIZED.value,
                 detail="token is expired",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         except jwt.JWTClaimsError:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+                status_code=HTTPStatus.UNAUTHORIZED.value,
                 detail="incorrect claims, please check the audience and issuer",
                 headers={"WWW-Authenticate": "Bearer"},
             )
@@ -84,7 +85,7 @@ class Authentication:
             exception_message = str(e)
             logger.exception('Authentication exception : %s', exception_message)
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+                status_code=HTTPStatus.UNAUTHORIZED.value,
                 detail="Unable to parse authentication token",
                 headers={"WWW-Authenticate": "Bearer"},
             )
